@@ -611,7 +611,10 @@ export default function GamePage() {
     (details.game.isFinished || details.game.turnIndex === 0);
 
   const leg = details.game.legNumber ?? 1;
-  const formatLine = `${details.game.startScore} · ${details.game.format.toUpperCase()}`;
+  const legsTarget = details.game.legsToWin;
+  const formatLine = `${details.game.startScore} · ${details.game.format.toUpperCase()}${
+    legsTarget != null ? ` · First to ${legsTarget} legs` : ""
+  }`;
   const active = details.activeParticipant;
 
   const statsRosterNames =
@@ -1176,8 +1179,22 @@ export default function GamePage() {
         </div>
       ) : (
         <section className="mx-3 mt-2 rounded-2xl border border-zinc-800 bg-[#0f1d15]/95 p-5 text-center">
-          <h2 className="text-lg font-semibold">Game ended</h2>
-          <p className="mt-2 text-sm text-zinc-400">Tap the arrow to return to the dashboard.</p>
+          <h2 className="text-lg font-semibold">Match over</h2>
+          <p className="mt-2 text-sm text-zinc-300">
+            Team {details.game.winnerTeam ?? "—"} wins
+            {legsTarget != null ? (
+              <>
+                {" "}
+                <span className="text-zinc-500">(first to {legsTarget} leg{legsTarget === 1 ? "" : "s"})</span>
+              </>
+            ) : null}
+            .
+          </p>
+          <p className="mt-1 text-2xl font-bold tabular-nums text-white">
+            {legsWonA} <span className="text-zinc-600">·</span> {legsWonB}
+            <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Legs</span>
+          </p>
+          <p className="mt-3 text-sm text-zinc-400">Tap the arrow to return to the dashboard.</p>
         </section>
       )}
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
@@ -61,13 +62,12 @@ function initials(name: string) {
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated: isSignedIn, isLoading } = useConvexAuth();
-  const { signIn, signOut } = useAuthActions();
+  const { signOut } = useAuthActions();
   const [tab, setTab] = useState<Tab>("play");
-  const [authFlow, setAuthFlow] = useState<"signIn" | "signUp">("signIn");
-  const [authEmail, setAuthEmail] = useState("");
-  const [authPassword, setAuthPassword] = useState("");
   const [format, setFormat] = useState<GameFormat>("2v2");
   const [startScore, setStartScore] = useState<StartScore>(501);
+  const [legsToWin, setLegsToWin] = useState(3);
+  const [openEndedMatch, setOpenEndedMatch] = useState(false);
   const [teamAPlayer1, setTeamAPlayer1] = useState("");
   const [teamAPlayer2, setTeamAPlayer2] = useState("");
   const [teamBPlayer1, setTeamBPlayer1] = useState("");
@@ -81,6 +81,7 @@ export default function Home() {
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>("all");
   const [statsLeaderView, setStatsLeaderView] = useState<StatsLeaderView>("players");
 
+  const viewerEmail = useQuery(api.viewer.getViewerEmail, isSignedIn ? {} : "skip");
   const games = useQuery(api.games.listGames, isSignedIn ? {} : "skip");
   const history = useQuery(api.games.listGameHistory, isSignedIn ? {} : "skip");
   const friendStats = useQuery(api.games.getFriendStats, isSignedIn ? {} : "skip");
@@ -102,6 +103,7 @@ export default function Home() {
     if (totalTurns === 0) return 0;
     return totalPoints / totalTurns;
   }, [stats?.playerStats]);
+  const authEmail = viewerEmail ?? "";
   const userBadge = authEmail?.trim().charAt(0).toUpperCase() || "Y";
   const meDisplayName = useMemo(() => {
     const fromEmail = guessYouNameFromEmail(authEmail).trim();
@@ -203,7 +205,13 @@ export default function Home() {
     try {
       const teamAPlayers = format === "2v2" ? [a1, a2] : [a1];
       const teamBPlayers = format === "2v2" ? [b1, b2] : [b1];
-      const gameId = await createGame({ format, startScore, teamAPlayers, teamBPlayers });
+      const gameId = await createGame({
+        format,
+        startScore,
+        legsToWin: openEndedMatch ? undefined : legsToWin,
+        teamAPlayers,
+        teamBPlayers,
+      });
       setTab("play");
       router.push(`/game/${gameId}`);
     } catch (cause) {
@@ -225,24 +233,6 @@ export default function Home() {
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Failed to add friend.");
       return false;
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleAuthSubmit(event: FormEvent) {
-    event.preventDefault();
-    setError(null);
-    setBusy(true);
-    try {
-      await signIn("password", {
-        email: authEmail,
-        password: authPassword,
-        flow: authFlow,
-      });
-      setAuthPassword("");
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Authentication failed.");
     } finally {
       setBusy(false);
     }
@@ -333,73 +323,44 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#06090f] pb-24 text-white">
-      {!isLoading && !isSignedIn ? (
+      {isLoading ? (
         <section className="flex min-h-screen items-center justify-center px-4">
-          <form
-            onSubmit={handleAuthSubmit}
-            className="w-full rounded-3xl border border-zinc-800/90 bg-[#0d1318]/95 p-7 text-center"
-          >
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-400">Welcome Back</p>
-            <h2 className="mt-2 text-3xl font-semibold text-white">Ready to play?</h2>
-            <p className="mt-2 text-sm text-zinc-400">
-              Sign in to continue your matches, friends, and history.
-            </p>
-            <div className="mt-6 space-y-3 text-left">
-              <input
-                type="email"
-                value={authEmail}
-                onChange={(event) => setAuthEmail(event.target.value)}
-                className={inputClassName}
-                placeholder="Email"
-                required
-              />
-              <input
-                type="password"
-                value={authPassword}
-                onChange={(event) => setAuthPassword(event.target.value)}
-                className={inputClassName}
-                placeholder="Password"
-                required
-              />
-            </div>
-            <div className="mt-5 flex items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => setAuthFlow("signIn")}
-                className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                  authFlow === "signIn"
-                    ? "bg-emerald-500 text-[#06120a]"
-                    : "border border-emerald-900 bg-[#13261b] text-zinc-200"
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => setAuthFlow("signUp")}
-                className={`rounded-lg px-3 py-2 text-sm font-medium ${
-                  authFlow === "signUp"
-                    ? "bg-emerald-500 text-[#06120a]"
-                    : "border border-emerald-900 bg-[#13261b] text-zinc-200"
-                }`}
-              >
-                Create Account
-              </button>
-            </div>
-            <div className="mt-4 flex justify-center">
-              <button
-                type="submit"
-                disabled={busy}
-                className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-[#06120a] transition hover:bg-emerald-400 disabled:opacity-60"
-              >
-                {busy ? "Working..." : authFlow === "signIn" ? "Sign In" : "Create Account"}
-              </button>
-            </div>
-          </form>
+          <p className="text-sm text-zinc-400">Loading…</p>
         </section>
-      ) : null}
-
-      {isSignedIn ? (
+      ) : !isSignedIn ? (
+        <section className="flex min-h-screen flex-col items-center justify-center px-6 py-12 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-400">Darts Counter</p>
+          <h1 className="mt-3 text-3xl font-semibold text-white">Track legs &amp; stats</h1>
+          <p className="mt-3 max-w-xs text-sm text-zinc-400">
+            Sign in to start matches, or create a free account to save history and friends.
+          </p>
+          <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
+            <Link
+              href="/auth/sign-in"
+              className="rounded-xl bg-emerald-500 py-3 text-center text-sm font-semibold text-[#06120a] hover:bg-emerald-400"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/auth/sign-up"
+              className="rounded-xl border border-zinc-700 bg-[#11161d] py-3 text-center text-sm font-semibold text-zinc-200 hover:border-emerald-600/50"
+            >
+              Sign up
+            </Link>
+          </div>
+          <p className="mt-8 text-sm text-zinc-500">
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/sign-up" className="font-semibold text-emerald-400 hover:text-emerald-300">
+              Sign up
+            </Link>
+            {" · "}
+            Already have an account?{" "}
+            <Link href="/auth/sign-in" className="font-semibold text-emerald-400 hover:text-emerald-300">
+              Sign in
+            </Link>
+          </p>
+        </section>
+      ) : (
         <>
           <header className="px-5 pb-4 pt-6">
             <div className="flex items-start justify-between">
@@ -493,6 +454,46 @@ export default function Home() {
                     >
                       Start score 501
                     </button>
+                  </div>
+
+                  <div className="rounded-2xl border border-zinc-800/80 bg-black/20 p-4">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                      Match length
+                    </p>
+                    <p className="mt-1 text-sm text-zinc-300">
+                      First to{" "}
+                      <span className="font-semibold text-white">{legsToWin}</span> leg
+                      {legsToWin === 1 ? "" : "s"} — that side wins the match.
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <label className="flex items-center gap-2 text-sm text-zinc-400">
+                        <span className="text-zinc-500">Legs to win</span>
+                        <select
+                          value={legsToWin}
+                          disabled={openEndedMatch}
+                          onChange={(e) => setLegsToWin(Number(e.target.value))}
+                          className={`${selectClassName} w-auto min-w-[4.5rem] py-2 pr-8 text-sm disabled:opacity-40`}
+                        >
+                          {[1, 2, 3, 4, 5, 7, 9, 11, 15, 21].map((n) => (
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                    <label className="mt-3 flex cursor-pointer items-start gap-3 text-left">
+                      <input
+                        type="checkbox"
+                        checked={openEndedMatch}
+                        onChange={(e) => setOpenEndedMatch(e.target.checked)}
+                        className="mt-1 h-4 w-4 shrink-0 rounded border-zinc-600 bg-[#11161d] text-emerald-500"
+                      />
+                      <span className="text-sm text-zinc-400">
+                        <span className="font-medium text-zinc-300">Open-ended match</span> — no automatic
+                        winner; use End on the game screen when you stop playing.
+                      </span>
+                    </label>
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -685,7 +686,9 @@ export default function Home() {
               <section className="px-4 pt-5">
                 <h3 className="mb-3 text-2xl font-semibold">Live games</h3>
                 <div className="space-y-2">
-                  {games?.map((game) => (
+                  {games
+                    ?.filter((game) => !game.matchCompleted)
+                    .map((game) => (
                     <button
                       key={game._id}
                       onClick={() => router.push(`/game/${game._id}`)}
@@ -695,11 +698,13 @@ export default function Home() {
                         {game.teamA.join(" + ")} vs {game.teamB.join(" + ")}
                       </p>
                       <p className="text-sm text-zinc-400">
-                        {game.format.toUpperCase()} · {game.startScore} · {game.teamAScore} - {game.teamBScore}
+                        {game.format.toUpperCase()} · {game.startScore}
+                        {game.legsToWin != null ? ` · First to ${game.legsToWin} legs` : ""} · {game.teamAScore} -{" "}
+                        {game.teamBScore}
                       </p>
                     </button>
                   ))}
-                  {games && games.length === 0 ? (
+                  {games && games.filter((g) => !g.matchCompleted).length === 0 ? (
                     <p className="rounded-xl border border-zinc-800 bg-[#0f141b] px-3 py-4 text-sm text-zinc-400">
                       No active games yet.
                     </p>
@@ -1209,7 +1214,7 @@ export default function Home() {
             </div>
           </nav>
         </>
-      ) : null}
+      )}
     </main>
   );
 }

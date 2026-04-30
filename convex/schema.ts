@@ -24,6 +24,8 @@ export default defineSchema({
     /** Which team throws first this leg (default A). */
     startsFirstTeam: v.optional(v.union(v.literal("A"), v.literal("B"))),
     legNumber: v.optional(v.number()),
+    /** First team to reach this many legs wins the match. Omitted = play until someone ends the game. */
+    legsToWin: v.optional(v.number()),
     matchCompleted: v.optional(v.boolean()),
     matchEndedAt: v.optional(v.number()),
     turnIndex: v.number(),

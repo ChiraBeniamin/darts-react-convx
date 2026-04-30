@@ -344,6 +344,8 @@ export const createGame = mutation({
   args: {
     format: v.union(v.literal("1v1"), v.literal("2v2")),
     startScore: v.union(v.literal(301), v.literal(501)),
+    /** First to this many legs wins. Omit for open-ended matches (end manually). */
+    legsToWin: v.optional(v.number()),
     teamAPlayers: v.array(v.string()),
     teamBPlayers: v.array(v.string()),
   },
@@ -363,6 +365,14 @@ export const createGame = mutation({
       throw new Error("Player names must be unique in the same game.");
     }
 
+    let legsToWin: number | undefined = args.legsToWin;
+    if (legsToWin !== undefined) {
+      legsToWin = Math.floor(legsToWin);
+      if (legsToWin < 1 || legsToWin > 99) {
+        throw new Error("Legs to win must be between 1 and 99.");
+      }
+    }
+
     const gameId = await ctx.db.insert("games", {
       ownerId,
       format: args.format,
@@ -372,6 +382,7 @@ export const createGame = mutation({
       teamAStarterIndex: 0,
       teamBStarterIndex: 0,
       legNumber: 1,
+      legsToWin,
       matchCompleted: false,
       turnIndex: 0,
       isFinished: false,
@@ -549,6 +560,12 @@ async function performTurn(
       createdAt: Date.now(),
     });
 
+    const turnsAfter = await ctx.db
+      .query("turns")
+      .withIndex("by_game", (q) => q.eq("gameId", args.gameId))
+      .collect();
+    const { legsWonA, legsWonB } = countLegWinsFromTurns(turnsAfter);
+
     await upsertPlayerTurnStats(
       ctx,
       ownerId,
@@ -565,21 +582,36 @@ async function performTurn(
       turnIndex: number;
       isFinished?: boolean;
       winnerTeam?: TeamSide;
+      matchCompleted?: boolean;
+      matchEndedAt?: number;
     } = { turnIndex: game.turnIndex + 1 };
 
     if (expectedParticipant.team === "A") nextPatch.teamAScore = scoreAfter;
     else nextPatch.teamBScore = scoreAfter;
 
     let winnerTeam: TeamSide | null = null;
+    let matchJustCompleted = false;
     if (!wasBust && scoreAfter === 0) {
       winnerTeam = expectedParticipant.team;
       nextPatch.isFinished = true;
       nextPatch.winnerTeam = winnerTeam;
+      const target = game.legsToWin;
+      if (target !== undefined && winnerTeam !== null) {
+        const legsForWinner = winnerTeam === "A" ? legsWonA : legsWonB;
+        if (legsForWinner >= target) {
+          matchJustCompleted = true;
+          nextPatch.matchCompleted = true;
+          nextPatch.matchEndedAt = Date.now();
+        }
+      }
     }
 
     await ctx.db.patch(args.gameId, nextPatch);
 
-    if (winnerTeam) {
+    const countStatWinOnThisCheckout =
+      winnerTeam !== null && (game.legsToWin === undefined || matchJustCompleted);
+
+    if (winnerTeam && countStatWinOnThisCheckout) {
       const winningPlayers = participants.filter((p) => p.team === winnerTeam);
       const losingPlayers = participants.filter((p) => p.team !== winnerTeam);
       const winningTeamKey = toTeamKey(winningPlayers.map((p) => p.playerName));
@@ -693,6 +725,10 @@ export const undoLastTurn = mutation({
       throw new Error("Undo is only available for the current leg.");
     }
 
+    const wasCheckoutWin = !latest.wasBust && latest.scoreAfter === 0;
+    const hadStatIncrementForThisTurn =
+      wasCheckoutWin && (game.legsToWin === undefined || game.matchCompleted === true);
+
     await ctx.db.delete(latest._id);
 
     const patch: {
@@ -701,16 +737,55 @@ export const undoLastTurn = mutation({
       turnIndex: number;
       isFinished: boolean;
       winnerTeam?: TeamSide;
+      matchCompleted?: boolean;
+      matchEndedAt?: number;
     } = {
       turnIndex: Math.max(game.turnIndex - 1, 0),
       isFinished: false,
       winnerTeam: undefined,
     };
 
+    if (game.matchCompleted) {
+      patch.matchCompleted = false;
+      patch.matchEndedAt = undefined;
+    }
+
     if (latest.team === "A") patch.teamAScore = latest.scoreBefore;
     else patch.teamBScore = latest.scoreBefore;
 
     await ctx.db.patch(args.gameId, patch);
+
+    if (hadStatIncrementForThisTurn) {
+      const participants = await ctx.db
+        .query("gameParticipants")
+        .withIndex("by_game", (q) => q.eq("gameId", args.gameId))
+        .collect();
+      participants.sort((a, b) => a.order - b.order);
+      const winningPlayers = participants.filter((p) => p.team === latest.team);
+      const winningTeamKey = toTeamKey(winningPlayers.map((p) => p.playerName));
+
+      const winningTeamStats = await ctx.db
+        .query("teamStats")
+        .withIndex("by_owner_team", (q) =>
+          q.eq("ownerId", ownerId).eq("teamKey", winningTeamKey),
+        )
+        .unique();
+      if (winningTeamStats && winningTeamStats.gamesWon > 0) {
+        await ctx.db.patch(winningTeamStats._id, { gamesWon: winningTeamStats.gamesWon - 1 });
+      }
+
+      for (const player of winningPlayers) {
+        const playerStats = await ctx.db
+          .query("playerStats")
+          .withIndex("by_owner_player", (q) =>
+            q.eq("ownerId", ownerId).eq("playerName", player.playerName),
+          )
+          .unique();
+        if (playerStats && playerStats.gamesWon > 0) {
+          await ctx.db.patch(playerStats._id, { gamesWon: playerStats.gamesWon - 1 });
+        }
+      }
+    }
   },
 });
 
