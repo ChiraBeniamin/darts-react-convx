@@ -590,7 +590,7 @@ export default function GamePage() {
     setBusy(true);
     try {
       await endGame({ gameId: details.game._id });
-      router.push("/");
+      router.push("/home");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Failed to end game.");
     } finally {
@@ -600,7 +600,7 @@ export default function GamePage() {
 
   if (!details) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#060908] px-4 text-white">
+      <main className="relative box-border flex h-[100dvh] max-h-[100dvh] w-full max-w-md flex-col items-center justify-center overflow-hidden bg-[#060908] px-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-white">
         <p className="text-sm text-zinc-400">Loading…</p>
       </main>
     );
@@ -624,13 +624,13 @@ export default function GamePage() {
   const modalPlayersLine = statsRosterNames.join(" · ");
 
   return (
-    <main className="relative mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#060908] text-white">
+    <main className="relative box-border mx-auto flex h-[100dvh] max-h-[100dvh] w-full max-w-md flex-col overflow-hidden bg-[#060908] pb-[max(1rem,env(safe-area-inset-bottom))] text-white">
       {/* Top bar */}
       <header className="flex shrink-0 items-start justify-between px-3 pt-2 pb-1">
         <Link
-          href="/"
+          href="/home"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-700/80 bg-[#111816] text-base text-zinc-100 shadow-inner hover:border-emerald-600/60"
-          aria-label="Back to dashboard"
+          aria-label="Back to home"
         >
           ←
         </Link>
@@ -657,9 +657,10 @@ export default function GamePage() {
         </div>
       ) : null}
 
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain">
       {/* Team scorecards */}
       {!details.game.matchCompleted && (
-        <div className="grid flex-1 grid-cols-2 gap-1.5 px-2.5 pb-1.5 min-h-[140px]">
+        <div className="grid shrink-0 grid-cols-2 gap-1.5 px-2.5 pb-1.5 min-h-[140px]">
           <div
             role="button"
             tabIndex={0}
@@ -1194,9 +1195,10 @@ export default function GamePage() {
             {legsWonA} <span className="text-zinc-600">·</span> {legsWonB}
             <span className="ml-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Legs</span>
           </p>
-          <p className="mt-3 text-sm text-zinc-400">Tap the arrow to return to the dashboard.</p>
+          <p className="mt-3 text-sm text-zinc-400">Tap the arrow to return home.</p>
         </section>
       )}
+      </div>
 
       {/* Stats modal */}
       {statsTeam !== null ? (

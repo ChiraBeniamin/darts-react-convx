@@ -26,7 +26,7 @@ export function AuthForm({ flow }: Props) {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace("/");
+      router.replace("/home");
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -41,7 +41,7 @@ export function AuthForm({ flow }: Props) {
         flow,
       });
       setPassword("");
-      router.replace("/");
+      router.replace("/home");
       router.refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Something went wrong.");

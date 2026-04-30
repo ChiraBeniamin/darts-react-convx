@@ -344,8 +344,8 @@ export const createGame = mutation({
   args: {
     format: v.union(v.literal("1v1"), v.literal("2v2")),
     startScore: v.union(v.literal(301), v.literal(501)),
-    /** First to this many legs wins. Omit for open-ended matches (end manually). */
-    legsToWin: v.optional(v.number()),
+    /** First to this many legs wins the match. */
+    legsToWin: v.number(),
     teamAPlayers: v.array(v.string()),
     teamBPlayers: v.array(v.string()),
   },
@@ -365,12 +365,9 @@ export const createGame = mutation({
       throw new Error("Player names must be unique in the same game.");
     }
 
-    let legsToWin: number | undefined = args.legsToWin;
-    if (legsToWin !== undefined) {
-      legsToWin = Math.floor(legsToWin);
-      if (legsToWin < 1 || legsToWin > 99) {
-        throw new Error("Legs to win must be between 1 and 99.");
-      }
+    const legsToWin = Math.floor(args.legsToWin);
+    if (legsToWin < 1 || legsToWin > 99) {
+      throw new Error("Legs to win must be between 1 and 99.");
     }
 
     const gameId = await ctx.db.insert("games", {
