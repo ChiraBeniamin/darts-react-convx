@@ -623,25 +623,25 @@ export default function GamePage() {
   return (
     <main className="relative mx-auto flex min-h-screen w-full max-w-md flex-col bg-[#060908] text-white">
       {/* Top bar */}
-      <header className="flex shrink-0 items-start justify-between px-4 pt-4 pb-2">
+      <header className="flex shrink-0 items-start justify-between px-3 pt-2 pb-1">
         <Link
           href="/"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-zinc-700/80 bg-[#111816] text-lg text-zinc-100 shadow-inner hover:border-emerald-600/60"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-700/80 bg-[#111816] text-base text-zinc-100 shadow-inner hover:border-emerald-600/60"
           aria-label="Back to dashboard"
         >
           ←
         </Link>
-        <div className="flex flex-1 flex-col items-center px-2 text-center">
-          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">{formatLine}</p>
-          <p className="mt-0.5 text-2xl font-bold tracking-tight text-white">Leg {leg}</p>
+        <div className="flex flex-1 flex-col items-center px-1.5 text-center">
+          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-500">{formatLine}</p>
+          <p className="mt-0.5 text-lg font-bold tracking-tight text-white">Leg {leg}</p>
         </div>
         <button
           type="button"
           onClick={handleEndGame}
           disabled={busy}
-          className="flex shrink-0 flex-col items-center gap-0.5 rounded-xl px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-red-300 hover:text-red-200 disabled:opacity-40"
+          className="flex shrink-0 flex-col items-center gap-0 rounded-lg px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-300 hover:text-red-200 disabled:opacity-40"
         >
-          <span className="text-base leading-none" aria-hidden>
+          <span className="text-sm leading-none" aria-hidden>
             🏁
           </span>
           End
@@ -649,14 +649,14 @@ export default function GamePage() {
       </header>
 
       {error ? (
-        <div className="mx-4 mb-2 rounded-xl border border-red-800/60 bg-red-950/40 px-3 py-2 text-center text-xs text-red-200">
+        <div className="mx-3 mb-1.5 rounded-lg border border-red-800/60 bg-red-950/40 px-2.5 py-1.5 text-center text-[11px] text-red-200">
           {error}
         </div>
       ) : null}
 
       {/* Team scorecards */}
       {!details.game.matchCompleted && (
-        <div className="grid flex-1 grid-cols-2 gap-2 px-3 pb-2 min-h-[200px]">
+        <div className="grid flex-1 grid-cols-2 gap-1.5 px-2.5 pb-1.5 min-h-[140px]">
           <div
             role="button"
             tabIndex={0}
@@ -668,30 +668,30 @@ export default function GamePage() {
                 openStats("A");
               }
             }}
-            className="relative flex cursor-pointer flex-col rounded-2xl border border-emerald-500/25 bg-gradient-to-b from-emerald-950/50 to-[#0a1510] p-3 shadow-lg shadow-emerald-900/20 outline-none ring-emerald-500/0 transition hover:ring-2 hover:ring-emerald-500/30 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+            className="relative flex cursor-pointer flex-col rounded-xl border border-emerald-500/25 bg-gradient-to-b from-emerald-950/50 to-[#0a1510] p-2 shadow-md shadow-emerald-900/20 outline-none ring-emerald-500/0 transition hover:ring-2 hover:ring-emerald-500/30 focus-visible:ring-2 focus-visible:ring-emerald-500/40"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-400/90">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-emerald-400/90">
               {teamLabel("A", details.teamA)}
             </p>
-            <div className="mt-2 flex flex-1 flex-col justify-between">
-              <div className="flex items-start justify-between gap-1">
-                <span className="text-5xl font-bold tabular-nums leading-none tracking-tighter text-white">
+            <div className="mt-1 flex flex-1 flex-col justify-between">
+              <div className="flex items-start justify-between gap-0.5">
+                <span className="text-3xl font-bold tabular-nums leading-none tracking-tighter text-white">
                   {details.game.teamAScore}
                 </span>
                 {lastTurnByTeam.A ? (
-                  <div className="flex flex-col items-end pt-1">
-                    <span className="text-[9px] font-medium uppercase tracking-wider text-zinc-500">Last</span>
-                    <span className="text-sm font-semibold tabular-nums text-emerald-400">
+                  <div className="flex flex-col items-end pt-0.5">
+                    <span className="text-[8px] font-medium uppercase tracking-wider text-zinc-500">Last</span>
+                    <span className="text-xs font-semibold tabular-nums text-emerald-400">
                       −{lastTurnByTeam.A.turnTotal}
                     </span>
                   </div>
                 ) : (
-                  <span className="pt-2 text-[10px] text-zinc-600">—</span>
+                  <span className="pt-1 text-[9px] text-zinc-600">—</span>
                 )}
               </div>
-              <div className="mt-2 rounded-xl border border-black/30 bg-black/25 px-2 py-1.5 text-center">
-                <p className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Legs won</p>
-                <p className="mt-0.5 text-2xl font-bold tabular-nums leading-tight text-emerald-300">{legsWonA}</p>
+              <div className="mt-1.5 rounded-lg border border-black/30 bg-black/25 px-1.5 py-1 text-center">
+                <p className="text-[8px] font-semibold uppercase tracking-wider text-zinc-500">Legs won</p>
+                <p className="mt-0 text-lg font-bold tabular-nums leading-none text-emerald-300">{legsWonA}</p>
               </div>
               {details.teamA.length > 1 ? (
                 <button
@@ -706,7 +706,7 @@ export default function GamePage() {
                     event.stopPropagation();
                     void handleToggleTeamStarter("A");
                   }}
-                  className="mt-2 w-full rounded-lg border border-emerald-800/50 bg-black/30 px-2 py-1.5 text-left text-[10px] font-medium leading-snug text-zinc-300 transition hover:border-emerald-600/50 hover:bg-emerald-950/30 disabled:opacity-40"
+                  className="mt-1.5 w-full rounded-md border border-emerald-800/50 bg-black/30 px-1.5 py-1 text-left text-[9px] font-medium leading-tight text-zinc-300 transition hover:border-emerald-600/50 hover:bg-emerald-950/30 disabled:opacity-40"
                 >
                   <span className="text-zinc-500">Order · </span>
                   <span className="text-emerald-200/95">
@@ -715,24 +715,24 @@ export default function GamePage() {
                   <span className="text-zinc-500"> · tap to switch</span>
                 </button>
               ) : null}
-              <div className="mt-3 flex flex-col gap-1.5">
+              <div className="mt-2 flex flex-col gap-1">
                 {details.teamA.map((player) => {
                   const throwing = active?._id === player._id;
                   return (
                     <div
                       key={player._id}
-                      className={`rounded-full px-2.5 py-1.5 text-center text-xs font-medium transition ${
+                      className={`rounded-lg px-2 py-1 text-center text-[11px] font-medium transition ${
                         throwing
-                          ? "border border-emerald-400/60 bg-emerald-500/20 text-emerald-100 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+                          ? "border border-emerald-400/60 bg-emerald-500/20 text-emerald-100 shadow-[0_0_8px_rgba(16,185,129,0.2)]"
                           : "border border-zinc-800/80 bg-black/20 text-zinc-500"
                       }`}
                     >
                       {throwing ? (
-                        <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 align-middle" />
+                        <span className="mr-0.5 inline-block h-1 w-1 rounded-full bg-emerald-400 align-middle" />
                       ) : null}
                       {player.playerName}
                       {throwing ? (
-                        <span className="mt-0.5 block text-[9px] font-semibold uppercase tracking-wider text-emerald-300/90">
+                        <span className="mt-0 block text-[8px] font-semibold uppercase tracking-wider text-emerald-300/90">
                           Throwing
                         </span>
                       ) : null}
@@ -754,30 +754,30 @@ export default function GamePage() {
                 openStats("B");
               }
             }}
-            className="relative flex cursor-pointer flex-col rounded-2xl border border-cyan-500/25 bg-gradient-to-b from-cyan-950/40 to-[#0a1215] p-3 shadow-lg shadow-cyan-900/15 outline-none ring-cyan-500/0 transition hover:ring-2 hover:ring-cyan-500/30 focus-visible:ring-2 focus-visible:ring-cyan-500/40"
+            className="relative flex cursor-pointer flex-col rounded-xl border border-cyan-500/25 bg-gradient-to-b from-cyan-950/40 to-[#0a1215] p-2 shadow-md shadow-cyan-900/15 outline-none ring-cyan-500/0 transition hover:ring-2 hover:ring-cyan-500/30 focus-visible:ring-2 focus-visible:ring-cyan-500/40"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-cyan-400/90">
+            <p className="text-[9px] font-semibold uppercase tracking-widest text-cyan-400/90">
               {teamLabel("B", details.teamB)}
             </p>
-            <div className="mt-2 flex flex-1 flex-col justify-between">
-              <div className="flex items-start justify-between gap-1">
-                <span className="text-5xl font-bold tabular-nums leading-none tracking-tighter text-white">
+            <div className="mt-1 flex flex-1 flex-col justify-between">
+              <div className="flex items-start justify-between gap-0.5">
+                <span className="text-3xl font-bold tabular-nums leading-none tracking-tighter text-white">
                   {details.game.teamBScore}
                 </span>
                 {lastTurnByTeam.B ? (
-                  <div className="flex flex-col items-end pt-1">
-                    <span className="text-[9px] font-medium uppercase tracking-wider text-zinc-500">Last</span>
-                    <span className="text-sm font-semibold tabular-nums text-cyan-400">
+                  <div className="flex flex-col items-end pt-0.5">
+                    <span className="text-[8px] font-medium uppercase tracking-wider text-zinc-500">Last</span>
+                    <span className="text-xs font-semibold tabular-nums text-cyan-400">
                       −{lastTurnByTeam.B.turnTotal}
                     </span>
                   </div>
                 ) : (
-                  <span className="pt-2 text-[10px] text-zinc-600">—</span>
+                  <span className="pt-1 text-[9px] text-zinc-600">—</span>
                 )}
               </div>
-              <div className="mt-2 rounded-xl border border-black/30 bg-black/25 px-2 py-1.5 text-center">
-                <p className="text-[9px] font-semibold uppercase tracking-wider text-zinc-500">Legs won</p>
-                <p className="mt-0.5 text-2xl font-bold tabular-nums leading-tight text-cyan-300">{legsWonB}</p>
+              <div className="mt-1.5 rounded-lg border border-black/30 bg-black/25 px-1.5 py-1 text-center">
+                <p className="text-[8px] font-semibold uppercase tracking-wider text-zinc-500">Legs won</p>
+                <p className="mt-0 text-lg font-bold tabular-nums leading-none text-cyan-300">{legsWonB}</p>
               </div>
               {details.teamB.length > 1 ? (
                 <button
@@ -792,7 +792,7 @@ export default function GamePage() {
                     event.stopPropagation();
                     void handleToggleTeamStarter("B");
                   }}
-                  className="mt-2 w-full rounded-lg border border-cyan-800/50 bg-black/30 px-2 py-1.5 text-left text-[10px] font-medium leading-snug text-zinc-300 transition hover:border-cyan-600/50 hover:bg-cyan-950/25 disabled:opacity-40"
+                  className="mt-1.5 w-full rounded-md border border-cyan-800/50 bg-black/30 px-1.5 py-1 text-left text-[9px] font-medium leading-tight text-zinc-300 transition hover:border-cyan-600/50 hover:bg-cyan-950/25 disabled:opacity-40"
                 >
                   <span className="text-zinc-500">Order · </span>
                   <span className="text-cyan-200/95">
@@ -801,24 +801,24 @@ export default function GamePage() {
                   <span className="text-zinc-500"> · tap to switch</span>
                 </button>
               ) : null}
-              <div className="mt-3 flex flex-col gap-1.5">
+              <div className="mt-2 flex flex-col gap-1">
                 {details.teamB.map((player) => {
                   const throwing = active?._id === player._id;
                   return (
                     <div
                       key={player._id}
-                      className={`rounded-full px-2.5 py-1.5 text-center text-xs font-medium transition ${
+                      className={`rounded-lg px-2 py-1 text-center text-[11px] font-medium transition ${
                         throwing
-                          ? "border border-cyan-400/60 bg-cyan-500/20 text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.2)]"
+                          ? "border border-cyan-400/60 bg-cyan-500/20 text-cyan-50 shadow-[0_0_8px_rgba(34,211,238,0.18)]"
                           : "border border-zinc-800/80 bg-black/20 text-zinc-500"
                       }`}
                     >
                       {throwing ? (
-                        <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full bg-cyan-400 align-middle" />
+                        <span className="mr-0.5 inline-block h-1 w-1 rounded-full bg-cyan-400 align-middle" />
                       ) : null}
                       {player.playerName}
                       {throwing ? (
-                        <span className="mt-0.5 block text-[9px] font-semibold uppercase tracking-wider text-cyan-200/90">
+                        <span className="mt-0 block text-[8px] font-semibold uppercase tracking-wider text-cyan-200/90">
                           Throwing
                         </span>
                       ) : null}
@@ -832,10 +832,10 @@ export default function GamePage() {
       )}
 
       {!details.game.matchCompleted && !details.game.isFinished && active ? (
-        <p className="px-4 pb-2 text-center text-xs text-zinc-400">
+        <p className="px-3 pb-1 text-center text-[10px] text-zinc-400">
           Now throwing{" "}
           <span
-            className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
+            className={`inline-block rounded-full px-1.5 py-px text-[10px] font-semibold ${
               active.team === "A"
                 ? "bg-emerald-500/25 text-emerald-200 ring-1 ring-emerald-500/40"
                 : "bg-cyan-500/20 text-cyan-100 ring-1 ring-cyan-500/35"
@@ -849,20 +849,20 @@ export default function GamePage() {
       {!details.game.matchCompleted && !details.game.isFinished ? (
         <>
           {pendingTurn ? (
-            <div className="mx-3 mt-1 flex flex-col gap-3 pb-2">
+            <div className="mx-2.5 mt-0.5 flex flex-col gap-2 pb-1.5">
               {pendingTurn.kind === "checkout" ? (
-                <div className="rounded-2xl border border-emerald-700/45 bg-gradient-to-b from-emerald-950/50 to-[#0c1210] p-4 shadow-lg shadow-emerald-900/15">
+                <div className="rounded-xl border border-emerald-700/45 bg-gradient-to-b from-emerald-950/50 to-[#0c1210] p-3 shadow-md shadow-emerald-900/15">
                   <p className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-400">
                     Checkout
                   </p>
-                  <p className="mt-1 text-center text-lg font-bold text-white">Turn total {pendingTurn.turnTotal}</p>
-                  <p className="mt-1 text-center text-[11px] text-zinc-500">
+                  <p className="mt-0.5 text-center text-base font-bold text-white">Turn total {pendingTurn.turnTotal}</p>
+                  <p className="mt-1 text-center text-[10px] text-zinc-500">
                     Turn total is stored as {checkoutSlotInfo.slots} scoring dart
                     {checkoutSlotInfo.slots === 1 ? "" : "s"} — you can still report 1–3 darts thrown at a double (e.g.
                     two misses then a checkout).
                   </p>
-                  <p className="mt-4 text-center text-sm text-zinc-300">Darts aimed at a double this visit</p>
-                  <div className="mt-2 flex gap-2">
+                  <p className="mt-3 text-center text-xs text-zinc-300">Darts aimed at a double this visit</p>
+                  <div className="mt-1.5 flex gap-1.5">
                     {Array.from({ length: checkoutSlotInfo.maxAtDouble }, (_, i) => i + 1).map((n) => (
                       <button
                         key={n}
@@ -872,7 +872,7 @@ export default function GamePage() {
                           setCheckoutAtDouble(n);
                           setCheckoutHitsOnDouble(null);
                         }}
-                        className={`flex-1 rounded-xl border py-3 text-lg font-bold ${
+                        className={`flex-1 rounded-lg border py-2 text-base font-bold ${
                           checkoutAtDouble === n
                             ? "border-emerald-500 bg-emerald-500/25 text-emerald-100 shadow-[0_0_14px_rgba(16,185,129,0.25)]"
                             : "border-zinc-700 bg-[#111820] text-zinc-300"
@@ -884,11 +884,11 @@ export default function GamePage() {
                   </div>
                   {checkoutAtDouble !== null && checkoutAtDouble > 1 ? (
                     <>
-                      <p className="mt-5 text-center text-sm text-zinc-300">How many hit a double?</p>
-                      <p className="mt-1 text-center text-[11px] text-zinc-500">
+                      <p className="mt-3 text-center text-xs text-zinc-300">How many hit a double?</p>
+                      <p className="mt-0.5 text-center text-[10px] text-zinc-500">
                         (Includes the checkout; misses lower your hit %.)
                       </p>
-                      <div className="mt-2 flex flex-wrap justify-center gap-2">
+                      <div className="mt-1.5 flex flex-wrap justify-center gap-1.5">
                         {Array.from({ length: checkoutAtDouble }, (_, i) => i + 1).map((n) => (
                           <button
                             key={n}
@@ -897,7 +897,7 @@ export default function GamePage() {
                               setError(null);
                               setCheckoutHitsOnDouble(n);
                             }}
-                            className={`min-w-[3.25rem] rounded-xl border px-3 py-2.5 text-base font-bold ${
+                            className={`min-w-[2.75rem] rounded-lg border px-2 py-2 text-sm font-bold ${
                               checkoutHitsOnDouble === n
                                 ? "border-emerald-500 bg-emerald-500/25 text-emerald-100 shadow-[0_0_14px_rgba(16,185,129,0.25)]"
                                 : "border-zinc-700 bg-[#111820] text-zinc-300"
@@ -918,17 +918,17 @@ export default function GamePage() {
                       ) : null}
                     </>
                   ) : checkoutAtDouble === 1 ? (
-                    <p className="mt-4 text-center text-xs text-zinc-500">One dart at the double — counts as 1 hit.</p>
+                    <p className="mt-2 text-center text-[10px] text-zinc-500">One dart at the double — counts as 1 hit.</p>
                   ) : null}
                 </div>
               ) : (
-                <div className="rounded-2xl border border-amber-700/40 bg-gradient-to-b from-amber-950/35 to-[#0c1210] p-4 shadow-lg shadow-amber-900/10">
+                <div className="rounded-xl border border-amber-700/40 bg-gradient-to-b from-amber-950/35 to-[#0c1210] p-3 shadow-md shadow-amber-900/10">
                   <p className="text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-amber-400">
                     Double zone
                   </p>
-                  <p className="mt-1 text-center text-lg font-bold text-white">You land on {pendingTurn.remaining}</p>
-                  <p className="mt-1 text-center text-xs text-zinc-500">Optional: darts on the double bed this visit</p>
-                  <div className="mt-3 flex gap-2">
+                  <p className="mt-0.5 text-center text-base font-bold text-white">You land on {pendingTurn.remaining}</p>
+                  <p className="mt-1 text-center text-[10px] text-zinc-500">Optional: darts on the double bed this visit</p>
+                  <div className="mt-2 flex gap-1.5">
                     {[0, 1, 2, 3].map((n) => (
                       <button
                         key={n}
@@ -938,7 +938,7 @@ export default function GamePage() {
                           setZoneDartsAtDouble(n);
                           setZoneHitsOnDouble(null);
                         }}
-                        className={`flex-1 rounded-xl border py-2.5 text-sm font-bold ${
+                        className={`flex-1 rounded-lg border py-2 text-xs font-bold ${
                           zoneDartsAtDouble === n
                             ? "border-amber-500 bg-amber-500/15 text-amber-100"
                             : "border-zinc-700 bg-[#111820] text-zinc-300"
@@ -950,11 +950,11 @@ export default function GamePage() {
                   </div>
                   {zoneDartsAtDouble !== null && zoneDartsAtDouble >= 1 ? (
                     <>
-                      <p className="mt-5 text-center text-sm text-zinc-300">How many hit a double?</p>
-                      <p className="mt-1 text-center text-[11px] text-zinc-500">
+                      <p className="mt-3 text-center text-xs text-zinc-300">How many hit a double?</p>
+                      <p className="mt-0.5 text-center text-[10px] text-zinc-500">
                         Count any double segment (including wrong doubles). Misses = 0 hits on that dart.
                       </p>
-                      <div className="mt-2 flex flex-wrap justify-center gap-2">
+                      <div className="mt-1.5 flex flex-wrap justify-center gap-1.5">
                         {Array.from({ length: zoneDartsAtDouble + 1 }, (_, i) => i).map((n) => (
                           <button
                             key={n}
@@ -963,7 +963,7 @@ export default function GamePage() {
                               setError(null);
                               setZoneHitsOnDouble(n);
                             }}
-                            className={`min-w-[3.25rem] rounded-xl border px-3 py-2.5 text-base font-bold ${
+                            className={`min-w-[2.75rem] rounded-lg border px-2 py-2 text-sm font-bold ${
                               zoneHitsOnDouble === n
                                 ? "border-amber-500 bg-amber-500/15 text-amber-100"
                                 : "border-zinc-700 bg-[#111820] text-zinc-300"
@@ -995,14 +995,14 @@ export default function GamePage() {
                   </label>
                 </div>
               )}
-              <div className="flex gap-2 px-0">
+              <div className="flex gap-1.5 px-0">
                 <button
                   type="button"
                   onClick={() => {
                     setError(null);
                     resetCheckoutModal();
                   }}
-                  className="flex-1 rounded-2xl border border-zinc-700 bg-[#141a22] py-3.5 text-sm font-semibold text-white hover:bg-zinc-800"
+                  className="flex-1 rounded-xl border border-zinc-700 bg-[#141a22] py-2.5 text-xs font-semibold text-white hover:bg-zinc-800"
                 >
                   Cancel
                 </button>
@@ -1014,7 +1014,7 @@ export default function GamePage() {
                       confirmCheckout();
                     }}
                     disabled={busy}
-                    className="flex-1 rounded-2xl bg-emerald-500 py-3.5 text-sm font-bold text-[#041008] shadow-lg shadow-emerald-500/25 disabled:opacity-50"
+                    className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-[#041008] shadow-md shadow-emerald-500/25 disabled:opacity-50"
                   >
                     Confirm leg
                   </button>
@@ -1027,7 +1027,7 @@ export default function GamePage() {
                         confirmZone(true);
                       }}
                       disabled={busy}
-                      className="flex-1 rounded-2xl border border-zinc-700 bg-[#141a22] py-3.5 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
+                      className="flex-1 rounded-xl border border-zinc-700 bg-[#141a22] py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
                     >
                       Skip
                     </button>
@@ -1038,7 +1038,7 @@ export default function GamePage() {
                         confirmZone(false);
                       }}
                       disabled={busy}
-                      className="flex-1 rounded-2xl bg-emerald-500 py-3.5 text-sm font-bold text-[#041008] shadow-lg shadow-emerald-500/25 disabled:opacity-50"
+                      className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold text-[#041008] shadow-md shadow-emerald-500/25 disabled:opacity-50"
                     >
                       Save
                     </button>
@@ -1048,36 +1048,36 @@ export default function GamePage() {
             </div>
           ) : (
             <>
-              <div className="relative mx-3 mt-1 rounded-2xl border border-zinc-800 bg-[#0c1210] p-4">
+              <div className="relative mx-2.5 mt-0.5 rounded-xl border border-zinc-800 bg-[#0c1210] p-2.5 pr-11">
                 <button
                   type="button"
                   onClick={handleBackspace}
                   disabled={busy || turnInput.length === 0}
-                  className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/80 text-lg text-zinc-300 hover:border-zinc-500 hover:text-white disabled:opacity-30"
+                  className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/80 text-base text-zinc-300 hover:border-zinc-500 hover:text-white disabled:opacity-30"
                   aria-label="Delete last digit"
                 >
                   ⌫
                 </button>
-                <p className="text-center text-[10px] font-semibold uppercase tracking-[0.25em] text-zinc-500">
+                <p className="text-center text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-500">
                   Turn total
                 </p>
-                <p className="mt-1 text-center text-5xl font-bold tabular-nums text-white">
+                <p className="mt-0.5 text-center text-3xl font-bold tabular-nums leading-none text-white">
                   {turnInput === "" ? "0" : turnInput}
                 </p>
                 {checkMessage ? (
-                  <p className="mt-2 text-center text-xs leading-relaxed text-emerald-300/90">{checkMessage}</p>
+                  <p className="mt-1 text-center text-[10px] leading-snug text-emerald-300/90">{checkMessage}</p>
                 ) : null}
               </div>
 
-              <div className="px-3 pt-3">
+              <div className="px-2.5 pt-2">
                 <button
                   type="button"
                   onClick={beginAddTurn}
                   disabled={busy}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-500 py-3.5 text-sm font-bold uppercase tracking-wide text-[#041208] shadow-lg shadow-emerald-500/35 transition hover:bg-emerald-400 disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-500 py-2.5 text-xs font-bold uppercase tracking-wide text-[#041208] shadow-md shadow-emerald-500/30 transition hover:bg-emerald-400 disabled:opacity-50"
                 >
                   Add turn
-                  <span className="text-lg" aria-hidden>
+                  <span className="text-base" aria-hidden>
                     →
                   </span>
                 </button>
@@ -1086,16 +1086,16 @@ export default function GamePage() {
               <button
                 type="button"
                 onClick={() => setShowLegHistory((v) => !v)}
-                className="mx-auto mt-2 text-[11px] font-medium text-zinc-500 underline-offset-2 hover:text-zinc-400 hover:underline"
+                className="mx-auto mt-1 text-[10px] font-medium text-zinc-500 underline-offset-2 hover:text-zinc-400 hover:underline"
               >
                 {showLegHistory ? "Hide leg history" : "Leg history"}
               </button>
               {showLegHistory ? (
-                <div className="mx-3 mt-2 max-h-32 space-y-1.5 overflow-y-auto rounded-xl border border-zinc-800/80 bg-black/20 p-2">
+                <div className="mx-2.5 mt-1.5 max-h-24 space-y-1 overflow-y-auto rounded-lg border border-zinc-800/80 bg-black/20 p-1.5">
                   {[...currentLegTurns]
                     .sort((a, b) => b.createdAt - a.createdAt)
                     .map((turn) => (
-                      <div key={turn._id} className="flex justify-between text-[11px] text-zinc-400">
+                      <div key={turn._id} className="flex justify-between text-[10px] text-zinc-400">
                         <span className="text-zinc-300">
                           {turn.playerName}{" "}
                           <span className="text-zinc-500">({turn.team})</span>
@@ -1109,13 +1109,13 @@ export default function GamePage() {
                 </div>
               ) : null}
 
-              <div className="mt-auto grid grid-cols-3 gap-2 px-3 pb-6 pt-4">
+              <div className="mt-auto grid grid-cols-3 gap-1.5 px-2.5 pb-4 pt-2">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
                   <button
                     key={digit}
                     type="button"
                     onClick={() => appendDigit(String(digit))}
-                    className="rounded-2xl border border-zinc-800/90 bg-[#121a17] py-4 text-2xl font-semibold text-white shadow-inner hover:border-emerald-700/50 active:scale-[0.98]"
+                    className="rounded-xl border border-zinc-800/90 bg-[#121a17] py-2.5 text-xl font-semibold text-white shadow-inner hover:border-emerald-700/50 active:scale-[0.98]"
                   >
                     {digit}
                   </button>
@@ -1124,9 +1124,9 @@ export default function GamePage() {
                   type="button"
                   onClick={handleUndo}
                   disabled={busy}
-                  className="flex items-center justify-center gap-1 rounded-2xl border border-zinc-800/90 bg-[#121a17] py-3 text-xs font-bold uppercase tracking-wide text-zinc-300 hover:border-zinc-600 disabled:opacity-40"
+                  className="flex items-center justify-center gap-0.5 rounded-xl border border-zinc-800/90 bg-[#121a17] py-2 text-[10px] font-bold uppercase tracking-wide text-zinc-300 hover:border-zinc-600 disabled:opacity-40"
                 >
-                  <span className="text-base" aria-hidden>
+                  <span className="text-sm" aria-hidden>
                     ↩
                   </span>
                   Revert
@@ -1134,17 +1134,17 @@ export default function GamePage() {
                 <button
                   type="button"
                   onClick={() => appendDigit("0")}
-                  className="rounded-2xl border border-zinc-800/90 bg-[#121a17] py-4 text-2xl font-semibold text-white shadow-inner hover:border-emerald-700/50 active:scale-[0.98]"
+                  className="rounded-xl border border-zinc-800/90 bg-[#121a17] py-2.5 text-xl font-semibold text-white shadow-inner hover:border-emerald-700/50 active:scale-[0.98]"
                 >
                   0
                 </button>
                 <button
                   type="button"
                   onClick={handleCheck}
-                  className="flex items-center justify-center gap-1 rounded-2xl border border-zinc-800/90 bg-[#121a17] py-3 text-xs font-bold uppercase tracking-wide text-emerald-300 hover:border-emerald-600/50"
+                  className="flex items-center justify-center gap-0.5 rounded-xl border border-zinc-800/90 bg-[#121a17] py-2 text-[10px] font-bold uppercase tracking-wide text-emerald-300 hover:border-emerald-600/50"
                 >
                   Check
-                  <span className="text-base" aria-hidden>
+                  <span className="text-sm" aria-hidden>
                     ✓
                   </span>
                 </button>
